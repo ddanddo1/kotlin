@@ -1,0 +1,81 @@
+
+
+// 플러그인 설정 : org.jetbrains.kotlin.jvm: Kotlin 코드를 JVM에서 실행할 수 있게 컴파일하는 플러그인입니다. 버전 1.8.21을 사용합니다.
+// application: 애플리케이션을 실행할 수 있게 해주는 Gradle 플러그인입니다.
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.8.21'
+    id 'application'
+}
+// group: 프로젝트의 그룹 ID를 설정합니다. 보통 조직의 도메인 이름을 거꾸로 쓴 형태를 사용합니다.
+// description: 프로젝트에 대한 간단한 설명을 제공합니다.
+group = 'KotlinStudy'
+description = "KotlinStudy"
+
+// mavenCentral(): Maven Central 저장소를 사용하여 프로젝트 의존성을 다운로드합니다.
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Kotlin 테스트 라이브러리
+    implementation("org.jetbrains.kotlin:kotlin-test")
+
+    // TestNG
+    implementation("org.testng:testng:7.8.0")
+
+    // 호환되는 Appium Java Client 버전
+    implementation("io.appium:java-client:8.3.0")
+
+    // 호환되는 Selenium 버전
+    implementation("org.seleniumhq.selenium:selenium-java:4.9.1")
+
+}
+
+
+configurations.all {
+    resolutionStrategy {
+        eachDependency {
+            if (requested.group == "org.seleniumhq.selenium" && requested.name == "selenium-api") {
+                useVersion("4.9.1") // 버전을 강제로 설정
+            }
+        }
+    }
+}
+
+// JUnit 플랫폼을 사용하여 테스트를 실행하도록 설정합니다.
+test {
+    useTestNG()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
+// Kotlin 컴파일러가 Java 17 버전을 타겟으로 하도록 설정합니다.
+kotlin {
+    jvmToolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
+}
+
+// 애플리케이션 설정 애플리케이션의 메인 클래스를 'MainKt'로 지정합니다. 이는 Kotlin 파일 'Main.kt'의 top-level main 함수를 가리킵니다.
+application {
+    mainClass = 'MainKt'
+}
+
+// `runMultiplicationTable` 태스크 추가
+tasks.register('runMultiplicationTable', JavaExec) {
+    group = 'application'
+    description = 'Run the multiplication table application.'
+    mainClass = 'MainKt'
+    classpath = sourceSets.main.runtimeClasspath
+    standardInput = System.in
+    standardOutput = System.out
+}
+
+tasks.register('runMinMaxFinder', JavaExec) {
+    group = 'application'
+    description = 'Run the multiplication table application.'
+    mainClass = 'MinMaxFinderKt'
+    classpath = sourceSets.main.runtimeClasspath
+    standardInput = System.in
+    standardOutput = System.out
+}
