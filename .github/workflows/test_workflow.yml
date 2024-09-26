@@ -20,8 +20,6 @@ jobs:
         run: |
           appium --address 0.0.0.0 --port 4723 > appium.log 2>&1 &
           sleep 10  # 서버 시작 대기 시간
-          echo "Appium 서버 로그:"
-          cat appium.log  # 로그 내용 확인
           if ! curl -s http://localhost:4723/status; then
             echo "Appium 서버 시작 실패."
             exit 1
