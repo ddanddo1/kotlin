@@ -38,12 +38,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Appium 서버 시작 및 상태 확인
+      - name: Appium 서버 시작
         run: |
-          appium -v
           appium &
           echo $! > appium_pid.txt
-          sleep 10
+          sleep 10  # Appium 서버가 완전히 시작될 때까지 대기
           if pgrep -x "appium" > /dev/null
           then
             echo "Appium 서버가 성공적으로 시작되었습니다."
