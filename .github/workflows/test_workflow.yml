@@ -18,12 +18,13 @@ jobs:
 
       - name: Appium 서버 시작
         run: |
-          appium --address 0.0.0.0 --port 4723 &
+          appium --address 0.0.0.0 --port 4723 > appium.log 2>&1 &
           sleep 5  # 서버 시작 대기 시간 조정
-          if nc -z localhost 4723; then
+          if curl -s http://localhost:4723/status; then
             echo "Appium 서버가 실행 중입니다."
           else
-            echo "Appium 서버 시작 실패. 서버 로그를 확인하세요."
+            echo "Appium 서버 시작 실패. 로그:"
+            cat appium.log
             exit 1
           fi
 
