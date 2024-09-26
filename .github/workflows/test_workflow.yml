@@ -28,16 +28,42 @@ jobs:
         with:
           ref: ${{ github.event.inputs.branch }}
 
+      - name: 환경 변수 확인
+        run: |
+          echo $PATH
+          which appium
+          which node
+          appium -v
+
       - name: Appium 서버 상태 확인 및 시작
         run: |
           if ! pgrep -x "appium" > /dev/null
           then
             echo "Appium 서버가 실행 중이 아닙니다. 시작합니다."
-            appium &
+            appium --address 0.0.0.0 &
             sleep 10  # Appium 서버가 완전히 시작될 때까지 대기
           else
             echo "Appium 서버가 이미 실행 중입니다."
           fi
+          if nc -z localhost 4723; then
+            echo "Appium 서버가 정상적으로 실행 중입니다."
+          else
+            echo "Appium 서버 연결에 실패했습니다."
+            exit 1
+          fi
+
+      - name: Appium 로그 확인
+        run: |
+          if [ -f ~/.appium/logs/appium.log ]; then
+            tail -n 50 ~/.appium/logs/appium.log
+          else
+            echo "Appium 로그 파일을 찾을 수 없습니다."
+          fi
+
+      - name: 네트워크 연결 확인
+        run: |
+          ifconfig
+          netstat -an | grep 4723
 
       - name: 실제 디바이스 연결 확인
         run: |
