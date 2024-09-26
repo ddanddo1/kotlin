@@ -8,7 +8,7 @@ on:
         required: true
         default: 'main'
       test_scope:
-        description: '테스트 범위'
+        description: '테스트˚ 범위'
         required: true
         type: choice
         options:
@@ -38,23 +38,41 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Appium 서버 상태 확인 및 시작
+      - name: Appium 서버 시작 및 상태 확인
         run: |
-          if ! pgrep -x "appium" > /dev/null
+          appium -v
+          appium &
+          echo $! > appium_pid.txt
+          sleep 10
+          if pgrep -x "appium" > /dev/null
           then
-            echo "Appium 서버가 실행 중이 아닙니다. 시작합니다."
-            appium &
-            sleep 10  # Appium 서버가 완전히 시작될 때까지 대기
+            echo "Appium 서버가 성공적으로 시작되었습니다."
           else
-            echo "Appium 서버가 이미 실행 중입니다."
+            echo "Appium 서버 시작에 실패했습니다."
+            exit 1
           fi
 
-      - name: 에뮬레이터 상태 확인
+      - name: Appium 및 환경 상태 확인
         run: |
-          if adb devices | grep -q "emulator"; then
-            echo "에뮬레이터가 이미 실행 중입니다."
+          echo "PATH: $PATH"
+          echo "ANDROID_HOME: $ANDROID_HOME"
+          which adb
+          which appium
+          ps aux | grep appium
+          netstat -tuln | grep 4723
+
+      - name: ADB 서버 재시작 및 에뮬레이터 확인
+        run: |
+          adb kill-server
+          adb start-server
+          sleep 5
+          devices=$(adb devices | grep -v "List" | grep "device$")
+          if [ -n "$devices" ]; then
+            echo "에뮬레이터가 실행 중입니다:"
+            echo "$devices"
           else
-            echo "에뮬레이터가 실행되고 있지 않습니다. 에뮬레이터를 시작해주세요."
+            echo "에뮬레이터가 감지되지 않습니다. 상태를 확인해주세요."
+            adb devices
             exit 1
           fi
 
