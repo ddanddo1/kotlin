@@ -15,8 +15,8 @@ on:
           - folder
           - class
           - method
-      test_domain:
-        description: '테스트할 도메인 (예: AndroidTest)'
+      test_target:
+        description: '테스트 대상 (폴더/클래스/메소드 이름)'
         required: true
         default: 'AndroidTest'
 
@@ -60,11 +60,15 @@ jobs:
 
       - name: 테스트 실행
         run: |
-          if [ "${{ github.event.inputs.test_scope }}" = "all" ] || [ "${{ github.event.inputs.test_scope }}" = "unit" ]; then
-            ./gradlew test --tests "${{ github.event.inputs.test_domain }}*"
-          fi
-          if [ "${{ github.event.inputs.test_scope }}" = "all" ] || [ "${{ github.event.inputs.test_scope }}" = "instrumented" ]; then
-            ./gradlew connectedAndroidTest --tests "${{ github.event.inputs.test_domain }}*"
+          if [ "${{ github.event.inputs.test_scope }}" = "folder" ]; then
+            ./gradlew connectedAndroidTest -Pandroid.testInstrumentationRunnerArguments.package=${{ github.event.inputs.test_target }}
+          elif [ "${{ github.event.inputs.test_scope }}" = "class" ]; then
+            ./gradlew connectedAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=${{ github.event.inputs.test_target }}
+          elif [ "${{ github.event.inputs.test_scope }}" = "method" ]; then
+            ./gradlew connectedAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=${{ github.event.inputs.test_target }}#${{ github.event.inputs.test_target }}
+          else
+            echo "잘못된 테스트 범위입니다."
+            exit 1
           fi
 
       - name: 테스트 결과 업로드
