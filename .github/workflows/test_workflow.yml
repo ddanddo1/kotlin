@@ -12,11 +12,11 @@ on:
         required: true
         type: choice
         options:
-          - all
-          - unit
-          - instrumented
-      test_domain:
-        description: '테스트할 도메인 (예: AndroidTest)'
+          - folder
+          - class
+          - method
+      test_target:
+        description: '테스트 대상 (폴더/클래스/메소드 이름)'
         required: true
         default: 'AndroidTest'
 
@@ -28,15 +28,6 @@ jobs:
         with:
           ref: ${{ github.event.inputs.branch }}
 
-      - name: JDK 설정
-        uses: actions/setup-java@v3
-        with:
-          java-version: '11'
-          distribution: 'adopt'
-
-      - name: Android SDK 설정
-        uses: android-actions/setup-android@v2
-
       - name: Gradle 캐시
         uses: actions/cache@v3
         with:
@@ -47,13 +38,37 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
+      - name: Appium 서버 상태 확인 및 시작
+        run: |
+          if ! pgrep -x "appium" > /dev/null
+          then
+            echo "Appium 서버가 실행 중이 아닙니다. 시작합니다."
+            appium &
+            sleep 10  # Appium 서버가 완전히 시작될 때까지 대기
+          else
+            echo "Appium 서버가 이미 실행 중입니다."
+          fi
+
+      - name: 에뮬레이터 상태 확인
+        run: |
+          if adb devices | grep -q "emulator"; then
+            echo "에뮬레이터가 이미 실행 중입니다."
+          else
+            echo "에뮬레이터가 실행되고 있지 않습니다. 에뮬레이터를 시작해주세요."
+            exit 1
+          fi
+
       - name: 테스트 실행
         run: |
-          if [ "${{ github.event.inputs.test_scope }}" = "all" ] || [ "${{ github.event.inputs.test_scope }}" = "unit" ]; then
-            ./gradlew test --tests "${{ github.event.inputs.test_domain }}*"
-          fi
-          if [ "${{ github.event.inputs.test_scope }}" = "all" ] || [ "${{ github.event.inputs.test_scope }}" = "instrumented" ]; then
-            ./gradlew connectedAndroidTest --tests "${{ github.event.inputs.test_domain }}*"
+          if [ "${{ github.event.inputs.test_scope }}" = "folder" ]; then
+            ./gradlew connectedAndroidTest -Pandroid.testInstrumentationRunnerArguments.package=${{ github.event.inputs.test_target }}
+          elif [ "${{ github.event.inputs.test_scope }}" = "class" ]; then
+            ./gradlew connectedAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=${{ github.event.inputs.test_target }}
+          elif [ "${{ github.event.inputs.test_scope }}" = "method" ]; then
+            ./gradlew connectedAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=${{ github.event.inputs.test_target }}#${{ github.event.inputs.test_target }}
+          else
+            echo "잘못된 테스트 범위입니다."
+            exit 1
           fi
 
       - name: 테스트 결과 업로드
