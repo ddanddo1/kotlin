@@ -28,15 +28,6 @@ jobs:
         with:
           ref: ${{ github.event.inputs.branch }}
 
-      - name: JDK 설정
-        uses: actions/setup-java@v3
-        with:
-          java-version: '11'
-          distribution: 'adopt'
-
-      - name: Android SDK 설정
-        uses: android-actions/setup-android@v2
-
       - name: Gradle 캐시
         uses: actions/cache@v3
         with:
@@ -46,6 +37,26 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
+
+      - name: Appium 서버 상태 확인 및 시작
+        run: |
+          if ! pgrep -x "appium" > /dev/null
+          then
+            echo "Appium 서버가 실행 중이 아닙니다. 시작합니다."
+            appium &
+            sleep 10  # Appium 서버가 완전히 시작될 때까지 대기
+          else
+            echo "Appium 서버가 이미 실행 중입니다."
+          fi
+
+      - name: 에뮬레이터 상태 확인
+        run: |
+          if adb devices | grep -q "emulator"; then
+            echo "에뮬레이터가 이미 실행 중입니다."
+          else
+            echo "에뮬레이터가 실행되고 있지 않습니다. 에뮬레이터를 시작해주세요."
+            exit 1
+          fi
 
       - name: 테스트 실행
         run: |
