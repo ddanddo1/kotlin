@@ -1,0 +1,64 @@
+name: TestWorkflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: '테스트할 브랜치'
+        required: true
+        default: 'main'
+      test_scope:
+        description: '테스트 범위'
+        required: true
+        type: choice
+        options:
+          - all
+          - unit
+          - instrumented
+      test_domain:
+        description: '테스트할 도메인 (예: AndroidTest)'
+        required: true
+        default: 'AndroidTest'
+
+jobs:
+  android_test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.inputs.branch }}
+
+      - name: JDK 설정
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'adopt'
+
+      - name: Android SDK 설정
+        uses: android-actions/setup-android@v2
+
+      - name: Gradle 캐시
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: 테스트 실행
+        run: |
+          if [ "${{ github.event.inputs.test_scope }}" = "all" ] || [ "${{ github.event.inputs.test_scope }}" = "unit" ]; then
+            ./gradlew test --tests "${{ github.event.inputs.test_domain }}*"
+          fi
+          if [ "${{ github.event.inputs.test_scope }}" = "all" ] || [ "${{ github.event.inputs.test_scope }}" = "instrumented" ]; then
+            ./gradlew connectedAndroidTest --tests "${{ github.event.inputs.test_domain }}*"
+          fi
+
+      - name: 테스트 결과 업로드
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: test-results
+          path: '**/build/test-results'
