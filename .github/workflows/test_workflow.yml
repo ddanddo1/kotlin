@@ -38,25 +38,37 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Appium 서버 시작
+      - name: 환경 변수 및 Appium 위치 확인
         run: |
-          appium &
-          echo $! > appium_pid.txt
-          sleep 10  # Appium 서버가 완전히 시작될 때까지 대기
-          if pgrep -x "appium" > /dev/null
+          echo "PATH: $PATH"
+          echo "NODE_PATH: $NODE_PATH"
+          which node
+          which npm
+          npm list -g --depth=0
+          which appium || echo "Appium not found in PATH"
+
+      - name: Appium 서버 상태 확인 및 시작
+        run: |
+          if ! pgrep -x "appium" > /dev/null
           then
-            echo "Appium 서버가 성공적으로 시작되었습니다."
+            echo "Appium 서버가 실행 중이 아닙니다. 시작합니다."
+            npx appium &
+            sleep 10  # Appium 서버가 완전히 시작될 때까지 대기
+            if pgrep -x "appium" > /dev/null
+            then
+              echo "Appium 서버가 성공적으로 시작되었습니다."
+            else
+              echo "Appium 서버 시작에 실패했습니다."
+              exit 1
+            fi
           else
-            echo "Appium 서버 시작에 실패했습니다."
-            exit 1
+            echo "Appium 서버가 이미 실행 중입니다."
           fi
 
       - name: Appium 및 환경 상태 확인
         run: |
-          echo "PATH: $PATH"
           echo "ANDROID_HOME: $ANDROID_HOME"
           which adb
-          which appium
           ps aux | grep appium
           netstat -tuln | grep 4723
 
