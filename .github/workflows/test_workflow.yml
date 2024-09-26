@@ -12,9 +12,9 @@ on:
         required: true
         type: choice
         options:
-          - all
-          - unit
-          - instrumented
+          - folder
+          - class
+          - method
       test_domain:
         description: '테스트할 도메인 (예: AndroidTest)'
         required: true
