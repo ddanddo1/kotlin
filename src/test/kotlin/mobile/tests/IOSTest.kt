@@ -7,7 +7,7 @@ import mobile.views.IOSAppView.typeIntegerA
 import mobile.views.IOSAppView.typeIntegerB
 import org.testng.annotations.Test
 
-class IOSTest : TestBase {
+class IOSTest : TestBase() {
 
     @Test
     fun sampleTest() {

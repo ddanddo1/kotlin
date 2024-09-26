@@ -1,29 +1,29 @@
 package mobile.base
 
-import mobile.driver.DriverManager.createDriver
 import mobile.driver.DriverManager.quitDriver
-import mobile.enums.Platform
-import mobile.utilities.ActionUtil
-import org.testng.annotations.AfterClass
-import org.testng.annotations.BeforeClass
+import mobile.driver.DriverManager.setDriver
+import org.testng.ITestResult
+import org.testng.annotations.AfterMethod
+import org.testng.annotations.AfterTest
+import org.testng.annotations.BeforeTest
+import org.testng.annotations.Parameters
 
-interface TestBase : ActionUtil {
+open class TestBase {
 
-    companion object {
-        val platform = when (System.getProperty("platform")) {
-            "android" -> Platform.ANDROID
-            "ios" -> Platform.IOS
-            else -> throw RuntimeException("플랫폼 정보를 android 또는 ios로 설정해주세요.")
+    @BeforeTest(alwaysRun = true)
+    @Parameters("platform")
+    fun setUp(platform: String) {
+        setDriver(platform)
+    }
+
+    @AfterMethod(alwaysRun = true)
+    fun tearDownMethod(result: ITestResult) {
+        if (listOf(ITestResult.FAILURE).contains(result.status)) {
+            println(result.throwable.stackTraceToString())
         }
     }
 
-    @BeforeClass
-    fun setUp() {
-        createDriver(platform) // or DriverManager.Platform.ANDROID
-        println("Setting up the test")
-    }
-
-    @AfterClass
+    @AfterTest
     fun tearDown() {
         quitDriver()
         println("Tearing down the test")

@@ -6,7 +6,7 @@ import java.time.Duration
 
 object DriverOption {
 
-    fun createAndroidOptions(): UiAutomator2Options {
+    fun setAndroidOptions(): UiAutomator2Options {
         return UiAutomator2Options().apply {
             setPlatformVersion("14.0")
             setDeviceName("Pixel 8 Pro API 34")
@@ -19,7 +19,7 @@ object DriverOption {
         }
     }
 
-    fun createIOSOptions(): XCUITestOptions {
+    fun setIOSOptions(): XCUITestOptions {
         return XCUITestOptions().apply {
             setPlatformVersion("17.5")
             setUdid("1F669193-7A3A-401C-8BFE-7101F0DE7471")

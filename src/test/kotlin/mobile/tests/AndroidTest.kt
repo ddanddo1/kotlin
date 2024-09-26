@@ -12,7 +12,7 @@ import mobile.views.AndroidAppView.typeLeftTitleText
 import mobile.views.AndroidAppView.typeRightTitleText
 import org.testng.annotations.Test
 
-class AndroidTest : TestBase {
+class AndroidTest : TestBase() {
 
     @Test
     fun sampleTest() {

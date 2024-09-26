@@ -2,7 +2,7 @@ package mobile.views
 
 import io.appium.java_client.AppiumBy
 import mobile.base.BaseView
-import mobile.driver.DriverManager.getDriver
+import mobile.driver.DriverManager
 
 object AndroidAppView : BaseView {
 
@@ -11,47 +11,47 @@ object AndroidAppView : BaseView {
     }
 
     fun tapApp() {
-        val appElement = getDriver().findElement(AppiumBy.xpath("//*[@text='App']"))
-        tapElement(appElement)
+        val appElement = DriverManager.getDriver().findElement(AppiumBy.xpath("//*[@text='App']"))
+        tap(appElement)
     }
 
     fun tapActivity() {
-        val activityElement = getDriver().findElement(AppiumBy.xpath("//*[@text='Activity']"))
-        tapElement(activityElement)
+        val activityElement = DriverManager.getDriver().findElement(AppiumBy.xpath("//*[@text='Activity']"))
+        tap(activityElement)
     }
 
     fun tapCustomTitle() {
-        val customTitleElement = getDriver().findElement(AppiumBy.xpath("//*[@text='Custom Title']"))
-        tapElement(customTitleElement)
+        val customTitleElement = DriverManager.getDriver().findElement(AppiumBy.xpath("//*[@text='Custom Title']"))
+        tap(customTitleElement)
     }
 
     fun typeLeftTitleText(text: String) {
-        val leftTextElement = getDriver().findElement(AppiumBy.id("left_text_edit"))
-        typeElement(leftTextElement, text)
+        val leftTextElement = DriverManager.getDriver().findElement(AppiumBy.id("left_text_edit"))
+        type(leftTextElement, text)
     }
 
     fun tapLeftTitleTextButton() {
-        val leftTextButtonElement = getDriver().findElement(AppiumBy.id("left_text_button"))
-        tapElement(leftTextButtonElement)
+        val leftTextButtonElement = DriverManager.getDriver().findElement(AppiumBy.id("left_text_button"))
+        tap(leftTextButtonElement)
     }
 
     fun typeRightTitleText(text: String) {
-        val rightTextElement = getDriver().findElement(AppiumBy.id("right_text_edit"))
-        typeElement(rightTextElement, text)
+        val rightTextElement = DriverManager.getDriver().findElement(AppiumBy.id("right_text_edit"))
+        type(rightTextElement, text)
     }
 
     fun tapRightTitleTextButton() {
-        val rightTextButtonElement = getDriver().findElement(AppiumBy.id("right_text_button"))
-        tapElement(rightTextButtonElement)
+        val rightTextButtonElement = DriverManager.getDriver().findElement(AppiumBy.id("right_text_button"))
+        tap(rightTextButtonElement)
     }
 
     fun assertLeftTitleText(text: String) {
-        val leftTextElement = getDriver().findElement(AppiumBy.id("left_text"))
+        val leftTextElement = DriverManager.getDriver().findElement(AppiumBy.id("left_text"))
         assert(leftTextElement.text == text)
     }
 
     fun assertRightTitleText(text: String) {
-        val rightTextElement = getDriver().findElement(AppiumBy.id("right_text"))
+        val rightTextElement = DriverManager.getDriver().findElement(AppiumBy.id("right_text"))
         assert(rightTextElement.text == text)
     }
 }

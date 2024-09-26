@@ -2,7 +2,7 @@ package mobile.views
 
 import io.appium.java_client.AppiumBy
 import mobile.base.BaseView
-import mobile.driver.DriverManager.getDriver
+import mobile.driver.DriverManager
 
 
 object IOSAppView : BaseView {
@@ -12,22 +12,22 @@ object IOSAppView : BaseView {
     }
 
     fun typeIntegerA(text: String) {
-        val integerAElement = getDriver().findElement(AppiumBy.id("IntegerA"))
-        typeElement(integerAElement, text)
+        val integerAElement = DriverManager.getDriver().findElement(AppiumBy.id("IntegerA"))
+        type(integerAElement, text)
     }
 
     fun typeIntegerB(text: String) {
-        val integerBElement = getDriver().findElement(AppiumBy.id("IntegerB"))
-        typeElement(integerBElement, text)
+        val integerBElement = DriverManager.getDriver().findElement(AppiumBy.id("IntegerB"))
+        type(integerBElement, text)
     }
 
     fun tapComputeSumButton() {
-        val addButtonElement = getDriver().findElement(AppiumBy.id("ComputeSumButton"))
-        tapElement(addButtonElement)
+        val addButtonElement = DriverManager.getDriver().findElement(AppiumBy.id("ComputeSumButton"))
+        tap(addButtonElement)
     }
 
     fun assertSumResult(text: String) {
-        val sumResultElement = getDriver().findElement(AppiumBy.id("Answer"))
+        val sumResultElement = DriverManager.getDriver().findElement(AppiumBy.id("Answer"))
         assert(sumResultElement.text == text)
     }
 }

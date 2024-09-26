@@ -3,42 +3,31 @@ package mobile.driver
 import io.appium.java_client.AppiumDriver
 import io.appium.java_client.android.AndroidDriver
 import io.appium.java_client.ios.IOSDriver
-import mobile.driver.DriverOption.createAndroidOptions
-import mobile.driver.DriverOption.createIOSOptions
-import mobile.enums.Platform
-import java.net.MalformedURLException
+import mobile.driver.DriverOption.setAndroidOptions
+import mobile.driver.DriverOption.setIOSOptions
 import java.net.URL
 
 object DriverManager {
 
-    private lateinit var driver: AppiumDriver
+    private val driverThreadLocal = ThreadLocal<AppiumDriver>()
 
-    // 플랫폼에 따라 드라이버 생성
-    fun createDriver(platform: Platform): AppiumDriver {
-        driver = when (platform) {
-            Platform.ANDROID -> AndroidDriver(getUrl(), createAndroidOptions())
-            Platform.IOS ->  IOSDriver(getUrl(), createIOSOptions())
+    fun setDriver(platform: String) {
+        val driver : AppiumDriver = when (platform.lowercase()) {
+            "android" -> AndroidDriver(serverUrl, setAndroidOptions())
+            "ios" -> IOSDriver(serverUrl, setIOSOptions())
+            else -> throw IllegalArgumentException("Unsupported platform: $platform")
         }
-
-        return driver
+        driverThreadLocal.set(driver)
     }
 
-    // 드라이버 가져오기
     fun getDriver(): AppiumDriver {
-        return driver
+        return driverThreadLocal.get() ?: throw IllegalStateException("Driver has not been set")
     }
 
-    // 드라이버 종료
     fun quitDriver() {
-        driver.quit()
+        driverThreadLocal.get().quit()
+        driverThreadLocal.remove()
     }
 
-    private fun getUrl(): URL {
-        return try {
-            URL("http://127.0.0.1:4723")
-        } catch (e: MalformedURLException) {
-            e.printStackTrace()
-            throw RuntimeException("Invalid URL")
-        }
-    }
+    private val serverUrl = URL("http://127.0.0.1:4723")
 }
