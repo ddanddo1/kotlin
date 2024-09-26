@@ -22,20 +22,21 @@ on:
 
 jobs:
   android_test:
-    runs-on: self-hosted  # 여기를 self-hosted로 변경
+    runs-on: self-hosted
     steps:
       - uses: actions/checkout@v3
         with:
           ref: ${{ github.event.inputs.branch }}
 
-      - name: Appium 서버 상태 확인
+      - name: Appium 서버 상태 확인 및 시작
         run: |
-          if pgrep -x "appium" > /dev/null; then
-            echo "Appium 서버가 실행 중입니다."
-          else
-            echo "Appium 서버가 실행되고 있지 않습니다. Appium을 시작합니다."
+          if ! pgrep -x "appium" > /dev/null
+          then
+            echo "Appium 서버가 실행 중이 아닙니다. 시작합니다."
             appium &
-            sleep 10
+            sleep 10  # Appium 서버가 완전히 시작될 때까지 대기
+          else
+            echo "Appium 서버가 이미 실행 중입니다."
           fi
 
       - name: 실제 디바이스 연결 확인
