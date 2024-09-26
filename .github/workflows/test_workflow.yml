@@ -51,37 +51,25 @@ jobs:
 
       - name: 에뮬레이터 상태 확인
         run: |
-          adb devices
-          if adb shell getprop sys.boot_completed | grep -q "1"; then
-            echo "에뮬레이터가 연결되었습니다."
+          if adb devices | grep -q "emulator"; then
+            echo "에뮬레이터가 이미 실행 중입니다."
           else
-            echo "경고: 에뮬레이터가 아직 부팅 중이거나 연결되지 않았습니다. 에뮬레이터 상태를 확인해주세요."
+            echo "에뮬레이터가 실행되고 있지 않습니다. 에뮬레이터를 시작해주세요."
+            exit 1
           fi
 
       - name: 테스트 실행
         run: |
-          TEST_COMMAND="./gradlew connectedAndroidTest"
-          
-          case "${{ github.event.inputs.test_scope }}" in
-            "folder")
-              TEST_COMMAND+=" -Pandroid.testInstrumentationRunnerArguments.package=${{ github.event.inputs.test_target }}"
-              ;;
-            "class")
-              TEST_COMMAND+=" -Pandroid.testInstrumentationRunnerArguments.class=${{ github.event.inputs.test_target }}"
-              ;;
-            "method")
-              CLASS_NAME=$(echo "${{ github.event.inputs.test_target }}" | cut -d'#' -f1)
-              METHOD_NAME=$(echo "${{ github.event.inputs.test_target }}" | cut -d'#' -f2)
-              TEST_COMMAND+=" -Pandroid.testInstrumentationRunnerArguments.class=${CLASS_NAME}#${METHOD_NAME}"
-              ;;
-            *)
-              echo "잘못된 테스트 범위입니다."
-              exit 1
-              ;;
-          esac
-          
-          echo "실행할 테스트 명령어: $TEST_COMMAND"
-          eval $TEST_COMMAND
+          if [ "${{ github.event.inputs.test_scope }}" = "folder" ]; then
+            ./gradlew connectedAndroidTest -Pandroid.testInstrumentationRunnerArguments.package=${{ github.event.inputs.test_target }}
+          elif [ "${{ github.event.inputs.test_scope }}" = "class" ]; then
+            ./gradlew connectedAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=${{ github.event.inputs.test_target }}
+          elif [ "${{ github.event.inputs.test_scope }}" = "method" ]; then
+            ./gradlew connectedAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=${{ github.event.inputs.test_target }}#${{ github.event.inputs.test_target }}
+          else
+            echo "잘못된 테스트 범위입니다."
+            exit 1
+          fi
 
       - name: 테스트 결과 업로드
         uses: actions/upload-artifact@v3
