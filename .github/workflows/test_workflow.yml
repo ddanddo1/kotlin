@@ -1,45 +1,24 @@
-name: Android Test Workflow
+name: Run Server
 
 on:
-  workflow_dispatch:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
-  android_test:
-    runs-on: self-hosted
+  run-server:
+    runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v2
 
-      - name: 환경 설정 확인
+      - name: Set up environment
         run: |
-          echo "Node 버전: $(node --version)"
-          echo "npm 버전: $(npm --version)"
-          echo "Appium 버전: $(appium --version)"
-          echo "ADB 버전: $(adb version)"
+          # 필요한 환경 설정을 여기에 추가하세요
 
-      - name: Run Appium Server
-        run: |
-          appium --address 0.0.0.0 --port 4723 > appium.log 2>&1 &
-          sleep 10  # 서버 시작 대기 시간
-          echo "Appium 서버가 실행 중입니다."
+      - name: Make runserver.sh executable
+        run: chmod +x runserver.sh
 
-      - name: 안드로이드 기기 연결 확인
-        run: |
-          devices=$(adb devices | grep -v "List" | grep "device$")
-          if [ -n "$devices" ]; then
-            echo "연결된 기기:"
-            echo "$devices"
-          else
-            echo "연결된 안드로이드 기기가 없습니다."
-            exit 1
-          fi
-
-      - name: 안드로이드 테스트 실행
-        run: |
-          ./gradlew connectedAndroidTest
-
-      - name: 테스트 결과 업로드
-        uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: test-results
-          path: '**/build/reports/androidTests'
+      - name: Run server
+        run: ./runserver.sh
