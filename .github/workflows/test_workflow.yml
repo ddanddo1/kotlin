@@ -68,15 +68,14 @@ jobs:
           echo "Appium 경로: \$APPIUM_PATH"
           
           # Appium 서버 시작 및 로그 출력
-          \$APPIUM_PATH --address 0.0.0.0 --port 4723 &> appium.log &
+          \$APPIUM_PATH --address 0.0.0.0 --port 4723 --log-level debug &> appium.log &
           APPIUM_PID=\$!
-          sleep 5
+          sleep 10  # 대기 시간 늘리기
           
           if ps -p \$APPIUM_PID > /dev/null
           then
             echo "Appium 서버가 시작되었습니다. (PID: \$APPIUM_PID)"
-            # 서버 로그 확인
-            tail -n 10 appium.log
+            tail -n 10 appium.log  # 로그 출력
             curl -f http://localhost:4723/wd/hub/status || (echo "Appium 서버가 응답하지 않습니다." && exit 1)
             echo "Appium 서버가 정상적으로 응답합니다."
           else
@@ -94,8 +93,15 @@ jobs:
 
       - name: Appium 서버 상태 확인
         run: |
-          curl -f http://localhost:4723/wd/hub/status || (echo "Appium 서버가 응답하지 않습니다." && exit 1)
-          echo "Appium 서버가 정상적으로 응답합니다."
+          if pgrep -f appium > /dev/null
+          then
+            echo "Appium 서버가 실행 중입니다."
+            curl -f http://localhost:4723/wd/hub/status || (echo "Appium 서버가 응답하지 않습니다." && exit 1)
+            echo "Appium 서버가 정상적으로 응답합니다."
+          else
+            echo "Appium 서버가 실행되지 않았습니다."
+            exit 1
+          fi
 
       - name: Android 테스트 실행
         run: |
