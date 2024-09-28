@@ -93,6 +93,7 @@ jobs:
       - name: Appium 서버 상태 확인
         run: |
           echo "Appium 서버 상태 확인 중..."
+          # curl 명령어를 수정하여 상태 확인
           curl -f http://localhost:4723/status || (echo "Appium 서버가 응답하지 않습니다. 로그 확인: $(cat appium.log)" && exit 1)
 
       - name: Android 테스트 실행
