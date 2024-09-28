@@ -119,7 +119,7 @@ jobs:
           echo "테스트 범위: ${{ github.event.inputs.test_scope }}"
           echo "테스트 대상: ${{ github.event.inputs.test_target }}"
           if [ "${{ github.event.inputs.test_scope }}" = "Class" ] && [ "${{ github.event.inputs.test_target }}" = "AndroidTest" ]; then
-            ./gradlew test --tests "*.AndroidTest"
+            ./gradlew test --tests "*.AndroidTest" -cp $HOME/.m2/repository/javax/xml/bind/jaxb-api-2.3.1.jar:$HOME/.m2/repository/org/glassfish/jaxb/jaxb-runtime-2.3.1.jar:$HOME/.m2/repository/javax/activation/activation-1.2.0.jar
           else
             echo "선택한 테스트 범위 또는 대상이 AndroidTest 클래스가 아닙니다."
             exit 1  # 테스트 범위가 잘못된 경우 종료
