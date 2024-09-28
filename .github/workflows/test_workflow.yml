@@ -95,6 +95,13 @@ jobs:
           echo "Appium 서버 상태 확인 중..."
           curl -f http://localhost:4723/status || (echo "Appium 서버가 응답하지 않습니다. 로그 확인: $(cat appium.log)" && exit 1)
 
+      - name: 에뮬레이터 연결 확인
+        run: |
+          echo "에뮬레이터 연결 확인 중..."
+          adb devices || (echo "에뮬레이터에 연결할 수 없습니다." && exit 1)
+          adb wait-for-device
+          echo "에뮬레이터가 준비되었습니다."
+
       - name: Android 테스트 실행
         run: |
           echo "테스트 범위: ${{ github.event.inputs.test_scope }}"
