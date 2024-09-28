@@ -35,10 +35,16 @@ jobs:
         with:
           node-version: '14'
 
+      - name: Java 8 설정
+        uses: actions/setup-java@v2
+        with:
+          java-version: '8'
+          distribution: 'adopt'
+
       - name: Android SDK 및 ADB 설치
         run: |
           sudo apt-get update
-          sudo apt-get install -y openjdk-11-jdk
+          sudo apt-get install -y openjdk-8-jdk
           mkdir -p $HOME/android-sdk
           cd $HOME/android-sdk
           wget https://dl.google.com/android/repository/sdk-tools-linux-3859397.zip
@@ -59,12 +65,6 @@ jobs:
           echo "APPIUM_HOME=$(npm prefix -g)/lib/node_modules/appium" >> $GITHUB_ENV
           echo "PATH=$(npm bin -g):$PATH" >> $GITHUB_ENV
           appium driver install uiautomator2  # UIAutomator2 드라이버 설치
-
-      - name: Java 설정
-        uses: actions/setup-java@v2
-        with:
-          java-version: '11'
-          distribution: 'adopt'
 
       - name: runserver.sh 생성
         run: |
