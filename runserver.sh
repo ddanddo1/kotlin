@@ -1,8 +1,7 @@
 # Appium 서버 실행 함수
 start_appium_server() {
     echo "Appium 서버를 시작합니다..."
-    export PATH="$(npm bin -g):$PATH"  # 전역 npm 경로 추가
-    npx appium --address 0.0.0.0 --port 4723 > appium.log 2>&1 &
+    appium --address 0.0.0.0 --port 4723 > appium.log 2>&1 &
     sleep 10  # 서버 시작 대기 시간
 
     # Appium 서버 상태 확인
