@@ -46,8 +46,11 @@ jobs:
         run: |
           echo "테스트 범위: ${{ github.event.inputs.test_scope }}"
           echo "테스트 대상: ${{ github.event.inputs.test_target }}"
-          # 여기에 실제 테스트 실행 명령어를 입력하세요.
-          # 예: ./gradlew test --tests "${{ github.event.inputs.test_target }}"
+          if [ "${{ github.event.inputs.test_scope }}" = "Class" ] && [ "${{ github.event.inputs.test_target }}" = "AndroidTest" ]; then
+            ./gradlew test --tests "*.AndroidTest"
+          else
+            echo "선택한 테스트 범위 또는 대상이 AndroidTest 클래스가 아닙니다."
+          fi
 
     # 여기에 디바이스 연동 단계를 추가할 수 있습니다.
     # - name: 디바이스 연동
