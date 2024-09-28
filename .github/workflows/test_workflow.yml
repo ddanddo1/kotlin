@@ -7,18 +7,10 @@ on:
         description: '테스트를 실행할 브랜치'
         required: true
         default: 'main'
-      folder:
-        description: '테스트할 폴더'
-        required: true
-      class:
-        description: '테스트할 클래스'
-        required: true
-      method:
-        description: '테스트할 메소드'
-        required: true
       test_scope:
-        description: '테스트 범위'
+        description: '테스트 범위 (예: folder.class.method)'
         required: true
+        type: string
 
 jobs:
   android-test:
@@ -45,9 +37,8 @@ jobs:
       - name: Android 테스트 실행
         run: |
           # 여기에 테스트 실행 명령어를 입력하세요.
-          # 예: ./gradlew test --tests "${{ github.event.inputs.folder }}.${{ github.event.inputs.class }}.${{ github.event.inputs.method }}"
-          echo "테스트 실행: ${{ github.event.inputs.folder }}.${{ github.event.inputs.class }}.${{ github.event.inputs.method }}"
-          echo "테스트 범위: ${{ github.event.inputs.test_scope }}"
+          # 예: ./gradlew test --tests "${{ github.event.inputs.test_scope }}"
+          echo "테스트 실행: ${{ github.event.inputs.test_scope }}"
 
     # 여기에 디바이스 연동 단계를 추가할 수 있습니다.
     # - name: 디바이스 연동
