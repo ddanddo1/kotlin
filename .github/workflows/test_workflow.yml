@@ -70,7 +70,7 @@ jobs:
           # Appium 서버 시작 및 로그 출력
           \$APPIUM_PATH --address 0.0.0.0 --port 4723 --log-level debug &> appium.log &
           APPIUM_PID=\$!
-          sleep 10  # 대기 시간 늘리기
+          sleep 20  # 대기 시간 20초로 연장
           
           if ps -p \$APPIUM_PID > /dev/null
           then
@@ -92,7 +92,21 @@ jobs:
       - name: Appium 서버 상태 확인
         run: |
           echo "Appium 서버 상태 확인 중..."
-          curl -f http://localhost:4723/wd/hub/status || (echo "Appium 서버가 응답하지 않습니다. 로그 확인: $(cat appium.log)" && exit 1)
+          for i in {1..5}; do
+            if curl -f http://localhost:4723/wd/hub/status; then
+              echo "Appium 서버가 응답합니다."
+              break
+            else
+              echo "Appium 서버가 아직 응답하지 않습니다. 재시도 중..."
+              sleep 5
+            fi
+          done
+          
+          if ! curl -f http://localhost:4723/wd/hub/status; then
+            echo "Appium 서버가 끝내 응답하지 않았습니다."
+            echo "로그 확인: $(cat appium.log)"
+            exit 1
+          fi
 
       - name: Android 테스트 실행
         run: |
