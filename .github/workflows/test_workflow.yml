@@ -35,6 +35,24 @@ jobs:
         with:
           node-version: '14'
 
+      - name: Android SDK 및 ADB 설치
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y openjdk-11-jdk
+          mkdir -p $HOME/android-sdk
+          cd $HOME/android-sdk
+          wget https://dl.google.com/android/repository/sdk-tools-linux-3859397.zip
+          unzip sdk-tools-linux-3859397.zip
+          rm sdk-tools-linux-3859397.zip
+          yes | $HOME/android-sdk/tools/bin/sdkmanager --licenses
+          $HOME/android-sdk/tools/bin/sdkmanager "platform-tools" "platforms;android-30"
+
+      - name: 환경 변수 설정
+        run: |
+          echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
+          echo "PATH=$ANDROID_HOME/platform-tools:$PATH" >> $GITHUB_ENV
+          echo "PATH=$HOME/android-sdk/tools/bin:$PATH" >> $GITHUB_ENV
+
       - name: Appium 및 드라이버 설치
         run: |
           npm install -g appium
