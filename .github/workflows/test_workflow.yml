@@ -108,9 +108,10 @@ jobs:
       - name: 에뮬레이터 연결 확인
         run: |
           echo "에뮬레이터 연결 확인 중..."
-          adb wait-for-device || (echo "에뮬레이터에 연결할 수 없습니다." && exit 1)
-          adb devices
+          EMULATOR_PORT=5554  # 사용 중인 포트 번호
+          adb wait-for-device || { echo "에뮬레이터에 연결할 수 없습니다." && exit 1; }
           echo "에뮬레이터가 준비되었습니다."
+          adb devices  # 연결된 디바이스 확인
 
       - name: Android 테스트 실행
         run: |
