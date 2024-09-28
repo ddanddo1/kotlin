@@ -1,0 +1,18 @@
+[35m[Appium][39m Welcome to Appium v2.5.1
+[35m[Appium][39m The autodetected Appium home path: /Users/jinhee/.appium
+[35m[Appium][39m Attempting to load driver uiautomator2...
+[35m[Appium][39m Requiring driver at /Users/jinhee/.appium/node_modules/appium-uiautomator2-driver/build/index.js
+[35m[Appium][39m AndroidUiautomator2Driver has been successfully loaded in 0.456s
+[35m[Appium][39m Appium REST http interface listener started on http://0.0.0.0:4723
+[35m[Appium][39m You can provide the following URLs in your client code to connect to this server:
+[35m[Appium][39m 	http://127.0.0.1:4723/ (only accessible from the same host)
+[35m[Appium][39m 	http://172.30.1.69:4723/
+[35m[Appium][39m Available drivers:
+[35m[Appium][39m   - uiautomator2@3.0.0 (automationName 'UiAutomator2')
+[35m[Appium][39m No plugins have been installed. Use the "appium plugin" command to install the one(s) you want to use.
+[38;5;0m[HTTP][0m [37m-->[39m [37mGET[39m [37m/status[39m
+[38;5;0m[HTTP][0m [90m{}[39m
+[38;5;16m[AppiumDriver@f7f4][0m Calling AppiumDriver.getStatus() with args: []
+[38;5;16m[AppiumDriver@f7f4][0m Responding to client with driver.getStatus() result: {"ready":true,"message":"The server is ready to accept new connections","build":{"version":"2.5.1"}}
+[38;5;0m[HTTP][0m [37m<-- GET /status [39m[32m200[39m [90m5 ms - 110[39m
+[38;5;0m[HTTP][0m [90m[39m
