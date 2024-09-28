@@ -108,8 +108,8 @@ jobs:
       - name: 에뮬레이터 연결 확인
         run: |
           echo "에뮬레이터 연결 확인 중..."
-          adb connect emulator-5554 || (echo "에뮬레이터에 연결할 수 없습니다." && exit 1)
-          adb wait-for-device
+          adb wait-for-device || (echo "에뮬레이터에 연결할 수 없습니다." && exit 1)
+          adb devices
           echo "에뮬레이터가 준비되었습니다."
 
       - name: Android 테스트 실행
