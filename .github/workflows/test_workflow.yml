@@ -33,7 +33,7 @@ jobs:
       - name: Node.js 설정
         uses: actions/setup-node@v2
         with:
-          node-version: '16'  # Node.js 버전 업데이트
+          node-version: '16'
 
       - name: Java 8 설정
         uses: actions/setup-java@v2
@@ -70,30 +70,28 @@ jobs:
           npm install -g appium
           echo "APPIUM_HOME=$(npm prefix -g)/lib/node_modules/appium" >> $GITHUB_ENV
           echo "PATH=$(npm bin -g):$PATH" >> $GITHUB_ENV
-          appium driver install uiautomator2  # UIAutomator2 드라이버 설치
+          appium driver install uiautomator2
 
       - name: runserver.sh 생성
         run: |
           cat << EOF > runserver.sh
           #!/bin/bash
           echo "Appium 서버를 시작합니다..."
-          export PATH=\$PATH:$(npm bin -g)  # 다시 PATH 설정
+          export PATH=\$PATH:$(npm bin -g)
           APPIUM_PATH=\$(which appium)
           if [ -z "\$APPIUM_PATH" ]; then
             echo "Appium을 찾을 수 없습니다."
             exit 1
           fi
           echo "Appium 경로: \$APPIUM_PATH"
-          
-          # Appium 서버 시작 및 로그 출력
           \$APPIUM_PATH --address 0.0.0.0 --port 4723 --log-level debug &> appium.log &
           APPIUM_PID=\$!
-          sleep 30  # 대기 시간 늘리기
+          sleep 30
           
           if ps -p \$APPIUM_PID > /dev/null
           then
             echo "Appium 서버가 시작되었습니다. (PID: \$APPIUM_PID)"
-            tail -n 10 appium.log  # 로그 출력
+            tail -n 10 appium.log
           else
             echo "Appium 서버 시작에 실패했습니다."
             exit 1
@@ -105,7 +103,7 @@ jobs:
         run: |
           ./runserver.sh
           echo "Appium 서버 시작 중..."
-          sleep 30  # Appium 서버가 완전히 시작될 때까지 대기
+          sleep 30
 
       - name: 에뮬레이터 연결 확인
         run: |
@@ -122,7 +120,7 @@ jobs:
             ./gradlew test --tests "*.AndroidTest" -cp $HOME/.m2/repository/javax/xml/bind/jaxb-api-2.3.1.jar:$HOME/.m2/repository/org/glassfish/jaxb/jaxb-runtime-2.3.1.jar:$HOME/.m2/repository/jakarta/activation/jakarta.activation-api/1.2.2/jakarta.activation-api-1.2.2.jar || (echo "테스트 실행 중 오류 발생" && exit 1)
           else
             echo "선택한 테스트 범위 또는 대상이 AndroidTest 클래스가 아닙니다."
-            exit 1  # 테스트 범위가 잘못된 경우 종료
+            exit 1
           fi
 
       - name: Appium 서버 로그 출력
