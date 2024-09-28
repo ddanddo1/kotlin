@@ -57,7 +57,7 @@ jobs:
           cat << EOF > runserver.sh
           #!/bin/bash
           echo "Appium 서버를 시작합니다..."
-          appium &
+          npx appium &
           APPIUM_PID=\$!
           sleep 5
           
