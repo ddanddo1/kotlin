@@ -43,6 +43,9 @@ jobs:
 
       - name: JAXB 라이브러리 다운로드
         run: |
+          mkdir -p $HOME/.m2/repository/javax/xml/bind/
+          mkdir -p $HOME/.m2/repository/org/glassfish/jaxb/jaxb-runtime/2.3.1/
+          mkdir -p $HOME/.m2/repository/jakarta/activation/jakarta.activation-api/1.2.2/
           wget https://repo1.maven.org/maven2/javax/xml/bind/jaxb-api/2.3.1/jaxb-api-2.3.1.jar -P $HOME/.m2/repository/javax/xml/bind/
           wget https://repo1.maven.org/maven2/org/glassfish/jaxb/jaxb-runtime/2.3.1/jaxb-runtime-2.3.1.jar -P $HOME/.m2/repository/org/glassfish/jaxb/jaxb-runtime/2.3.1/
           wget https://repo1.maven.org/maven2/jakarta/activation/jakarta.activation-api/1.2.2/jakarta.activation-api-1.2.2.jar -P $HOME/.m2/repository/jakarta/activation/jakarta.activation-api/1.2.2/
@@ -108,7 +111,7 @@ jobs:
       - name: 에뮬레이터 연결 확인
         run: |
           echo "에뮬레이터 연결 확인 중..."
-          adb devices || (echo "에뮬레이터에 연결할 수 없습니다." && exit 1)
+          adb devices
           adb wait-for-device
           echo "에뮬레이터가 준비되었습니다."
 
