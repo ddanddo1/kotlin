@@ -1,24 +1,55 @@
-name: Run Server
+name: '[Test] Android Test'
 
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: '테스트를 실행할 브랜치'
+        required: true
+        default: 'main'
+      folder:
+        description: '테스트할 폴더'
+        required: true
+      class:
+        description: '테스트할 클래스'
+        required: true
+      method:
+        description: '테스트할 메소드'
+        required: true
+      test_scope:
+        description: '테스트 범위'
+        required: true
 
 jobs:
-  run-server:
+  android-test:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - name: 코드 체크아웃
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.branch }}
 
-      - name: Set up environment
+      - name: Java 설정
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+          distribution: 'adopt'
+
+      - name: Appium 서버 시작
         run: |
-          # 필요한 환경 설정을 여기에 추가하세요
+          chmod +x runserver.sh
+          ./runserver.sh &
+          sleep 10  # Appium 서버가 시작될 때까지 대기
 
-      - name: Make runserver.sh executable
-        run: chmod +x runserver.sh
+      - name: Android 테스트 실행
+        run: |
+          # 여기에 테스트 실행 명령어를 입력하세요.
+          # 예: ./gradlew test --tests "${{ github.event.inputs.folder }}.${{ github.event.inputs.class }}.${{ github.event.inputs.method }}"
+          echo "테스트 실행: ${{ github.event.inputs.folder }}.${{ github.event.inputs.class }}.${{ github.event.inputs.method }}"
+          echo "테스트 범위: ${{ github.event.inputs.test_scope }}"
 
-      - name: Run server
-        run: ./runserver.sh
+    # 여기에 디바이스 연동 단계를 추가할 수 있습니다.
+    # - name: 디바이스 연동
+    #   run: |
+    #     # 디바이스 연동 명령어
