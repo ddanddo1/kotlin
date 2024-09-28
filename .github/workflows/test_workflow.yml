@@ -108,7 +108,9 @@ jobs:
       - name: 에뮬레이터 연결 확인
         run: |
           echo "에뮬레이터 연결 확인 중..."
-          adb devices || (echo "에뮬레이터에 연결할 수 없습니다." && exit 1)
+          EMULATOR_IP=<에뮬레이터 IP>  # 에뮬레이터의 IP 주소로 변경
+          EMULATOR_PORT=5555  # 일반적으로 5555 사용
+          adb connect $EMULATOR_IP:$EMULATOR_PORT || (echo "에뮬레이터에 연결할 수 없습니다." && exit 1)
           adb wait-for-device
           echo "에뮬레이터가 준비되었습니다."
 
@@ -117,7 +119,7 @@ jobs:
           echo "테스트 범위: ${{ github.event.inputs.test_scope }}"
           echo "테스트 대상: ${{ github.event.inputs.test_target }}"
           if [ "${{ github.event.inputs.test_scope }}" = "Class" ] && [ "${{ github.event.inputs.test_target }}" = "AndroidTest" ]; then
-            ./gradlew test --tests "*.AndroidTest" -cp $HOME/.m2/repository/javax/xml/bind/jaxb-api-2.3.1.jar:$HOME/.m2/repository/org/glassfish/jaxb/jaxb-runtime-2.3.1.jar:$HOME/.m2/repository/jakarta/activation/jakarta.activation-api/1.2.2/jakarta.activation-api-1.2.2.jar || (echo "테스트 실행 중 오류 발생" && exit 1)
+            ./gradlew test --tests "*.AndroidTest" -cp $HOME/.m2/repository/javax/xml/bind/jaxb-api-2.3.1.jar:$HOME/.m2/repository/org/glassfish/jaxb/jaxb-runtime-2.3.1.jar:$HOME/.m2/repository/jakarta/activation/jakarta.activation-api-1.2.2/jakarta.activation-api-1.2.2.jar || (echo "테스트 실행 중 오류 발생" && exit 1)
           else
             echo "선택한 테스트 범위 또는 대상이 AndroidTest 클래스가 아닙니다."
             exit 1
