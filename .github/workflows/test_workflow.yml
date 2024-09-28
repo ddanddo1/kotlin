@@ -8,7 +8,15 @@ on:
         required: true
         default: 'main'
       test_scope:
-        description: '테스트 범위 (예: folder.class.method)'
+        description: '테스트 범위'
+        required: true
+        type: choice
+        options:
+          - Folder
+          - Class
+          - Method
+      test_target:
+        description: '테스트 대상 (선택한 범위에 따라 폴더/클래스/메소드 이름 입력)'
         required: true
         type: string
 
@@ -36,9 +44,10 @@ jobs:
 
       - name: Android 테스트 실행
         run: |
-          # 여기에 테스트 실행 명령어를 입력하세요.
-          # 예: ./gradlew test --tests "${{ github.event.inputs.test_scope }}"
-          echo "테스트 실행: ${{ github.event.inputs.test_scope }}"
+          echo "테스트 범위: ${{ github.event.inputs.test_scope }}"
+          echo "테스트 대상: ${{ github.event.inputs.test_target }}"
+          # 여기에 실제 테스트 실행 명령어를 입력하세요.
+          # 예: ./gradlew test --tests "${{ github.event.inputs.test_target }}"
 
     # 여기에 디바이스 연동 단계를 추가할 수 있습니다.
     # - name: 디바이스 연동
