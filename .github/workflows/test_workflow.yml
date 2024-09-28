@@ -41,6 +41,12 @@ jobs:
           java-version: '8'
           distribution: 'adopt'
 
+      - name: JAXB 라이브러리 다운로드
+        run: |
+          wget https://repo1.maven.org/maven2/javax/xml/bind/jaxb-api/2.3.1/jaxb-api-2.3.1.jar -P $HOME/.m2/repository/javax/xml/bind/
+          wget https://repo1.maven.org/maven2/org/glassfish/jaxb/jaxb-runtime/2.3.1/jaxb-runtime-2.3.1.jar -P $HOME/.m2/repository/org/glassfish/jaxb/jaxb-runtime/2.3.1/
+          wget https://repo1.maven.org/maven2/javax/activation/activation/1.2.0/activation-1.2.0.jar -P $HOME/.m2/repository/javax/activation/activation/1.2.0/
+
       - name: Android SDK 및 ADB 설치
         run: |
           sudo apt-get update
