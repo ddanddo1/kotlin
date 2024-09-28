@@ -41,6 +41,10 @@ jobs:
           echo "APPIUM_HOME=$(npm prefix -g)/lib/node_modules/appium" >> $GITHUB_ENV
           echo "PATH=$(npm bin -g):$PATH" >> $GITHUB_ENV
 
+      - name: Appium 드라이버 설치
+        run: |
+          appium driver install uiautomator2
+
       - name: 환경 변수 및 Appium 설치 확인
         run: |
           echo "PATH: $PATH"
@@ -93,7 +97,7 @@ jobs:
         run: |
           echo "Appium 서버 상태 확인 중..."
           for i in {1..5}; do
-            if curl -f http://localhost:4723/wd/hub/status; then
+            if curl -f http://localhost:4723/status; then
               echo "Appium 서버가 응답합니다."
               break
             else
@@ -102,9 +106,10 @@ jobs:
             fi
           done
           
-          if ! curl -f http://localhost:4723/wd/hub/status; then
+          if ! curl -f http://localhost:4723/status; then
             echo "Appium 서버가 끝내 응답하지 않았습니다."
-            echo "로그 확인: $(cat appium.log)"
+            echo "로그 확인:"
+            cat appium.log
             exit 1
           fi
 
