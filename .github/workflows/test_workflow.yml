@@ -38,7 +38,13 @@ jobs:
       - name: Appium 설치
         run: |
           npm install -g appium
+          echo "$(npm bin -g)" >> $GITHUB_PATH
           appium -v
+
+      - name: Appium 설치 확인
+        run: |
+          which appium
+          appium --version
 
       - name: Java 설정
         uses: actions/setup-java@v2
@@ -46,13 +52,44 @@ jobs:
           java-version: '11'
           distribution: 'adopt'
 
+      - name: runserver.sh 생성
+        run: |
+          cat << EOF > runserver.sh
+          #!/bin/bash
+          echo "Appium 서버를 시작합니다..."
+          appium &
+          APPIUM_PID=\$!
+          sleep 5
+          
+          if ps -p \$APPIUM_PID > /dev/null
+          then
+            echo "Appium 서버가 시작되었습니다. (PID: \$APPIUM_PID)"
+            curl -f http://localhost:4723/wd/hub/status || (echo "Appium 서버가 응답하지 않습니다." && exit 1)
+            echo "Appium 서버가 정상적으로 응답합니다."
+          else
+            echo "Appium 서버 시작에 실패했습니다."
+            exit 1
+          fi
+          EOF
+          chmod +x runserver.sh
+
       - name: Appium 서버 시작
         run: |
-          chmod +x runserver.sh
           ./runserver.sh &
           echo "Appium 서버 시작 중..."
           sleep 10  # Appium 서버가 완전히 시작될 때까지 대기
-          echo "Appium 서버 시작 완료"
+
+      - name: Appium 서버 상태 확인
+        run: |
+          if pgrep -f appium > /dev/null
+          then
+            echo "Appium 서버가 실행 중입니다."
+            curl -f http://localhost:4723/wd/hub/status || (echo "Appium 서버가 응답하지 않습니다." && exit 1)
+            echo "Appium 서버가 정상적으로 응답합니다."
+          else
+            echo "Appium 서버가 실행되지 않았습니다."
+            exit 1
+          fi
 
       - name: Android 테스트 실행
         run: |
