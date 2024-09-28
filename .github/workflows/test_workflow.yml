@@ -40,7 +40,9 @@ jobs:
         run: |
           chmod +x runserver.sh
           ./runserver.sh &
-          sleep 10  # Appium 서버가 시작될 때까지 대기
+          echo "Appium 서버 시작 중..."
+          sleep 10  # Appium 서버가 완전히 시작될 때까지 대기
+          echo "Appium 서버 시작 완료"
 
       - name: Android 테스트 실행
         run: |
@@ -52,7 +54,8 @@ jobs:
             echo "선택한 테스트 범위 또는 대상이 AndroidTest 클래스가 아닙니다."
           fi
 
-    # 여기에 디바이스 연동 단계를 추가할 수 있습니다.
-    # - name: 디바이스 연동
-    #   run: |
-    #     # 디바이스 연동 명령어
+      - name: Appium 서버 종료
+        if: always()
+        run: |
+          pkill -f runserver.sh
+          echo "Appium 서버 종료"
